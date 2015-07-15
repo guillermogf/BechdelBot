@@ -156,9 +156,10 @@ while True:
     except:
         last_update = "0"  # If lastupdate file not present, read all updates
 
-    getupdates_url = getupdates_url + "?offset=" + str(int(last_update) + 1)
 
-    get_updates = requests.get(getupdates_url)
+    getupdates_offset_url = getupdates_url + "?offset=" + str(int(last_update) + 1)
+
+    get_updates = requests.get(getupdates_offset_url)
     if get_updates.status_code != 200:
         continue
     else:
