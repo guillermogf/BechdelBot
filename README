@@ -1,0 +1,9 @@
+BechdelBot
+Author: Guillermo Gómez Fonfría
+Email: <guillermo.gf@openmailbox.org>
+
+BechdelBot uses Telegram's bot API and bechdeltest.com API to display if a
+movie passes the Bechdel test or not.
+
+Thanks to bechdeltest.com for its API and the database of movies
+Thanks to Telegram for the bot API
