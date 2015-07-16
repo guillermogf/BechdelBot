@@ -161,6 +161,7 @@ while True:
 
     get_updates = requests.get(getupdates_offset_url)
     if get_updates.status_code != 200:
+        print(get_updates.status_code)  # For debugging
         continue
     else:
         updates = json.loads(get_updates.content)["result"]
