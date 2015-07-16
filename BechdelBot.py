@@ -19,6 +19,7 @@
 import requests
 import json
 import sys
+import time
 
 # Load Token
 try:
@@ -176,6 +177,11 @@ while True:
         last_update_file.write(str(item["update_id"]))
         last_update_file.close()
 
+        # Store time to log
+        log = open("log", "a")
+        log.write(str(time.time()) + "\n")
+        log.close()
+
         # Sometimes it can't use the key 'text'. Let's know why
         try:
             tmp = item["message"]["text"]
@@ -191,7 +197,7 @@ while True:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + help_text)
-        elif "/about" == item["message"]["text"]:
+        elif "/about" in item["message"]["text"]:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + about_text)
