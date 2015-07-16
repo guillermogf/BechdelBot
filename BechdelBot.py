@@ -122,13 +122,15 @@ def get_by_imdb(imdb):
         return "Server appears to have a problem. Try again later"
     movie = json.loads(results.content)
 
-    if len(movie) == 0:
-        return "No matches"
-
     output = []
     n = 1
     output.append("Result No. {0}:".format(n))
-    output.append(" Title: {0}".format(movie["title"]))
+
+    # If the imdb id isn't correct, server's response lacks some keys
+    try:
+        output.append(" Title: {0}".format(movie["title"]))
+    except KeyError:
+        return "No matches"
     output.append(" Year: {0}".format(movie["year"]))
 
     if movie["rating"] == "0":
@@ -156,8 +158,8 @@ while True:
     except:
         last_update = "0"  # If lastupdate file not present, read all updates
 
-
-    getupdates_offset_url = getupdates_url + "?offset=" + str(int(last_update) + 1)
+    getupdates_offset_url = getupdates_url + "?offset=" + str(int(last_update)
+                                                              + 1)
 
     get_updates = requests.get(getupdates_offset_url)
     if get_updates.status_code != 200:
@@ -173,6 +175,13 @@ while True:
         last_update_file = open("lastupdate", "w")
         last_update_file.write(str(item["update_id"]))
         last_update_file.close()
+
+        # Sometimes it can't use the key 'text'. Let's know why
+        try:
+            tmp = item["message"]["text"]
+        except KeyError:
+            print(item)
+            continue
 
         if "/start" == item["message"]["text"]:
             message = requests.get(sendmessage_url + "?chat_id=" +
@@ -205,8 +214,8 @@ while True:
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + result)
         elif item["message"]["chat"]["id"] < 0:
-            # If it is none of the above and it's a group, let's guess it was for
-            # another bot rather than sending the unknown command message
+            # If it is none of the above and it's a group, let's guess it was
+            # for another bot rather than sending the unknown command message
             continue
         else:
             message = requests.get(sendmessage_url + "?chat_id=" +
