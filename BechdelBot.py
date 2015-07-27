@@ -77,6 +77,12 @@ def get_argument(message):
     elif "/imdb@BechdelBot" in message:
         message.remove("/imdb@BechdelBot")
 
+    # Bechdeltest.com API requires articles to be at the end
+    if "the" in message:
+        message[-1] = message[-1] + ","
+        message.remove("the")
+        message.append("the")
+
     argument = " ".join(message)
     return argument
 
@@ -89,7 +95,11 @@ def get_by_title(title):
     results = json.loads(results.content)
 
     if len(results) > 5:
-        return "Your search matches too many results. Try being more specific"
+        for movie in results:
+            if movie["title"] == "Ted":
+                results = [movie]
+        if len(results) != 1:
+            return "Your search matches too many results. Try being more specific"
     elif len(results) == 0:
         return "No matches"
 
@@ -182,27 +192,28 @@ while True:
         log.write(str(time.time()) + "\n")
         log.close()
 
-        # Sometimes it can't use the key 'text'. Let's know why
+        # Group's status messages don't include "text" key
         try:
-            tmp = item["message"]["text"]
+            text = item["message"]["text"]
         except KeyError:
-            print(item)
             continue
 
-        if "/start" == item["message"]["text"]:
+        text = text.lower()
+
+        if "/start" == text:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + start_text + help_text)
-        elif "/help" in item["message"]["text"]:
+        elif "/help" in text:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + help_text)
-        elif "/about" in item["message"]["text"]:
+        elif "/about" in text:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + about_text)
-        elif "/title" in item["message"]["text"]:
-            argument = get_argument(item["message"]["text"])
+        elif "/title" in text:
+            argument = get_argument(text)
             if argument == "":
                 result = "You need to specify the title"
             else:
@@ -210,8 +221,8 @@ while True:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + result)
-        elif "/imdb" in item["message"]["text"]:
-            argument = get_argument(item["message"]["text"])
+        elif "/imdb" in text:
+            argument = get_argument(text)
             if argument == "":
                 result = "You need to specify the imdb id"
             else:
