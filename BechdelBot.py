@@ -66,7 +66,7 @@ wiki/Bechdel_test"
 error_unknown = "Unknown command\n"
 
 
-def get_argument(message):
+def get_argument(message, title=None):
     message = message.split(" ")
     if "/title" in message:
         message.remove("/title")
@@ -76,9 +76,13 @@ def get_argument(message):
         message.remove("/title@BechdelBot")
     elif "/imdb@BechdelBot" in message:
         message.remove("/imdb@BechdelBot")
+    elif "/feedback" in message:
+        message.remove("/feedback")
+    elif "/feedback@BechdelBot" in message:
+        message.remove("/feedback@BechdelBot")
 
     # Bechdeltest.com API requires articles to be at the end
-    if "the" in message:
+    if title and "the" in message:
         message[-1] = message[-1] + ","
         message.remove("the")
         message.append("the")
@@ -99,7 +103,8 @@ def get_by_title(title):
             if movie["title"] == "Ted":
                 results = [movie]
         if len(results) != 1:
-            return "Your search matches too many results. Try being more specific"
+            return "Your search matches too many results. \
+                   Try being more specific"
     elif len(results) == 0:
         return "No matches"
 
@@ -160,6 +165,12 @@ def get_by_imdb(imdb):
     return "\n".join(output)
 
 
+def feedback(message):
+    feedback_file = open("feedback", "a")
+    feedback = " ".join(message) + "\n"
+    feedback_file.write(feedback.encode("utf-8"))
+
+
 while True:
     # Load last update
     try:
@@ -212,8 +223,20 @@ while True:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + about_text)
+        elif "/feedback" in text:
+            if get_argument(text) != "":
+                feedback([time.ctime(item["message"]["date"]),
+                          "id:" + str(item["message"]["chat"]["id"]),
+                          item["message"]["from"]["first_name"], text])
+                answer = "Thanks for your feedback!"
+            else:
+                answer = "Write your message after /feedback"
+            message = requests.get(sendmessage_url + "?chat_id=" +
+                                   str(item["message"]["chat"]["id"]) +
+                                   "&text=" + answer)
+
         elif "/title" in text:
-            argument = get_argument(text)
+            argument = get_argument(text, True)
             if argument == "":
                 result = "You need to specify the title"
             else:
