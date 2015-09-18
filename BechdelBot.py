@@ -50,7 +50,8 @@ help_text = "List of available commands:\n/about Explains the Bechdel Test\n\
 /help Shows this list of available commands\n/title Search movie by title\n\
 /imdb Search movie by imdb unique id. You can get it using @iFilmBot\n\n\
 Note that some non-English characters (e.g á, ü, ñ) don't work when \
-searching by title. Use the imdb id instead."
+searching by title. Use the imdb id instead.\n/feedback <message> Send your \
+feedback to the BechdelBot developers"
 
 about_text = "The Bechdel Test is a simple test to show the problem of \
 gender inequality in movies.\n\nFor a movie to pass the test it has to \
@@ -167,6 +168,7 @@ def get_by_imdb(imdb):
 def feedback(message):
     with open("feedback", "a") as feedback_file:
         feedback = " ".join(message) + "\n"
+        feedback_file.write(feedback.encode("utf-8"))
 
 
 while True:
