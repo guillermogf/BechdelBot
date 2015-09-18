@@ -23,13 +23,12 @@ import time
 
 # Load Token
 try:
-    token_file = open("token")
+    with open("token") as token_file:
+        token = token_file.read().rstrip("\n")
 except:
     print("Token file missing")
     sys.exit(1)
 
-token = token_file.read().rstrip("\n")
-token_file.close()
 
 # Telegram API urls
 api_url = "https://api.telegram.org/bot"
@@ -166,17 +165,15 @@ def get_by_imdb(imdb):
 
 
 def feedback(message):
-    feedback_file = open("feedback", "a")
-    feedback = " ".join(message) + "\n"
-    feedback_file.write(feedback.encode("utf-8"))
+    with open("feedback", "a") as feedback_file:
+        feedback = " ".join(message) + "\n"
 
 
 while True:
     # Load last update
     try:
-        last_update_file = open("lastupdate")
-        last_update = last_update_file.read().rstrip("\n")
-        last_update_file.close()
+        with open("lastupdate") as last_update_file:
+            last_update = last_update_file.read().rstrip("\n")
     except:
         last_update = "0"  # If lastupdate file not present, read all updates
 
@@ -186,6 +183,7 @@ while True:
     get_updates = requests.get(getupdates_offset_url)
     if get_updates.status_code != 200:
         print(get_updates.status_code)  # For debugging
+        time.sleep(1)
         continue
     else:
         updates = json.loads(get_updates.content)["result"]
@@ -194,14 +192,12 @@ while True:
         if int(last_update) >= item["update_id"]:
             continue
         # Store last update
-        last_update_file = open("lastupdate", "w")
-        last_update_file.write(str(item["update_id"]))
-        last_update_file.close()
+        with open("lastupdate", "w") as last_update_file:
+            last_update_file.write(str(item["update_id"]))
 
         # Store time to log
-        log = open("log", "a")
-        log.write(str(time.time()) + "\n")
-        log.close()
+        with open("log", "a") as log:
+            log.write(str(time.time()) + "\n")
 
         # Group's status messages don't include "text" key
         try:
@@ -261,3 +257,4 @@ while True:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + error_unknown + help_text)
+    time.sleep(1)
