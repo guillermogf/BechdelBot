@@ -185,7 +185,6 @@ while True:
     get_updates = requests.get(getupdates_offset_url)
     if get_updates.status_code != 200:
         print(get_updates.status_code)  # For debugging
-        time.sleep(1)
         continue
     else:
         updates = json.loads(get_updates.content)["result"]
@@ -259,4 +258,3 @@ while True:
             message = requests.get(sendmessage_url + "?chat_id=" +
                                    str(item["message"]["chat"]["id"]) +
                                    "&text=" + error_unknown + help_text)
-    time.sleep(1)
