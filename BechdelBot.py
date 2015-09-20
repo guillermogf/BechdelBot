@@ -61,7 +61,7 @@ simplicity of the criteria \"demonstrates how [...] women's complex and \
 interesting lives are underrepresented or non existent in the film industry.\
 \" as said by the author of the comic (Alison Bechdel) in which it appeared \
 first.\n\nLearn more at http://bechdeltest.com and https://en.wikipedia.org/\
-wiki/Bechdel_test"
+wiki/Bechdel_test\n\nSource code at: https://github.com/guillermogf/BechdelBot"
 
 error_unknown = "Unknown command\n"
 
