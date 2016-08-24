@@ -20,6 +20,10 @@ import requests
 import json
 import sys
 import time
+import HTMLParser
+
+# Prepare parser
+parser = HTMLParser.HTMLParser()
 
 # Load Token
 try:
@@ -128,7 +132,8 @@ def get_by_title(title):
         output.append(" http://bechdeltest.com/view/{0}\n"
                       .format(movie["id"]))
         n += 1
-    return "\n".join(output)
+    final_output = parser.unescape("\n".join(output))
+    return final_output
 
 
 def get_by_imdb(imdb):
